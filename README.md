@@ -5,12 +5,12 @@
     <!--- <br> -->
     <a href="https://pypi.python.org/pypi/prefect-langchain/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-langchain?color=0052FF&labelColor=090422"></a>
-    <a href="https://github.com/PrefectHQ/prefect-langchain/" alt="Stars">
-        <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-langchain?color=0052FF&labelColor=090422" /></a>
+    <a href="https://github.com/zzstoatzz/prefect-langchain/" alt="Stars">
+        <img src="https://img.shields.io/github/stars/zzstoatzz/prefect-langchain?color=0052FF&labelColor=090422" /></a>
     <a href="https://pypistats.org/packages/prefect-langchain/" alt="Downloads">
         <img src="https://img.shields.io/pypi/dm/prefect-langchain?color=0052FF&labelColor=090422" /></a>
-    <a href="https://github.com/PrefectHQ/prefect-langchain/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-langchain?color=0052FF&labelColor=090422" /></a>
+    <a href="https://github.com/zzstoatzz/prefect-langchain/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/zzstoatzz/prefect-langchain?color=0052FF&labelColor=090422" /></a>
     <br>
     <a href="https://prefect-community.slack.com" alt="Slack">
         <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
@@ -93,11 +93,11 @@ A list of available blocks in `prefect-langchain` and their setup instructions c
 
 ### Feedback
 
-If you encounter any bugs while using `prefect-langchain`, feel free to open an issue in the [prefect-langchain](https://github.com/PrefectHQ/prefect-langchain) repository.
+If you encounter any bugs while using `prefect-langchain`, feel free to open an issue in the [prefect-langchain](https://github.com/zzstoatzz/prefect-langchain) repository.
 
 If you have any questions or issues while using `prefect-langchain`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack).
 
-Feel free to star or watch [`prefect-langchain`](https://github.com/PrefectHQ/prefect-langchain) for updates too!
+Feel free to star or watch [`prefect-langchain`](https://github.com/zzstoatzz/prefect-langchain) for updates too!
 
 ### Contributing
 
@@ -113,7 +113,7 @@ pip install -e ".[dev]"
 ```
 4. Make desired changes
 5. Add tests
-6. Insert an entry to [CHANGELOG.md](https://github.com/PrefectHQ/prefect-langchain/blob/main/CHANGELOG.md)
+6. Insert an entry to [CHANGELOG.md](https://github.com/zzstoatzz/prefect-langchain/blob/main/CHANGELOG.md)
 7. Install `pre-commit` to perform quality checks prior to commit:
 ```
 pre-commit install
