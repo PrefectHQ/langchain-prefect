@@ -1,0 +1,46 @@
+name: Template Synchronization
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  submit-update-pr:
+    name: Submit update PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install cruft
+        run: pip install "cookiecutter>=1.7.3,<2.0.0" cruft
+
+      - name: Perform updates
+        run: cruft update -y
+
+      - uses: tibdex/github-app-token@v1
+        id: generate-token
+        name: Generate GitHub token
+        with:
+          app_id: ${{ secrets.SYNC_APP_ID }}
+          private_key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+
+      - name: Submit PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Updating collection with changes to prefect-collection-template
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: sync-with-template
+          delete-branch: true
+          title: Sync Collection with changes to prefect-collection-template
+          body: |
+            Automated PR created to propagate changes from prefect-collection-template to this collection
+
+            Feel free to make any necessary changes to this PR before merging.
+          labels: |
+            template sync
+            automated pr

@@ -1,0 +1,20 @@
+{
+  "template": "https://github.com/PrefectHQ/prefect-collection-template",
+  "commit": "e11a3be195f24f60ed3f564dfccb40170ee7c3fa",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Prefect Technologies",
+      "email": "nate@prefect.io",
+      "github_organization": "PrefectHQ",
+      "collection_name": "prefect-langchain",
+      "collection_slug": "prefect_langchain",
+      "collection_short_description": "Orchestrate and observe tools built with langchain.",
+      "_copy_without_render": [
+        ".github/workflows/*.yml"
+      ],
+      "_template": "https://github.com/PrefectHQ/prefect-collection-template"
+    }
+  },
+  "directory": null
+}
