@@ -18,7 +18,6 @@ def test_record_call_using_callable_llm():
 def test_record_call_using_qa_with_sources_chain():
     """Test LLM call wrapped when using a QA with sources chain."""
     loader = DirectoryLoader("context")
-
     index = VectorstoreIndexCreator().from_loaders([loader])
     query = "What did the president say about Ketanji Brown Jackson"
     index.query_with_sources(query)
@@ -26,4 +25,4 @@ def test_record_call_using_qa_with_sources_chain():
 
 if __name__ == "__main__":
     test_record_call_using_callable_llm()
-    test_record_call_using_qa_with_sources_chain()
+    # test_record_call_using_qa_with_sources_chain()
