@@ -11,7 +11,7 @@ def record_call_using_callable_llm():
     """Test LLM call wrapped when using a callable LLM."""
     with RecordLLMCalls():
         llm = OpenAI(temperature=0.9)
-        llm("What would be a good name for a " "company that makes colorful socks?")
+        llm("What would be a good name for a company that makes colorful socks?")
 
 
 async def record_call_using_callable_llm_async():
@@ -20,9 +20,8 @@ async def record_call_using_callable_llm_async():
         llm = OpenAI(temperature=0.9)
         await llm.agenerate(
             [
-                "What would be a good name for a " "company that makes colorful socks?",
-                "What would be a good name for a "
-                "company that makes carbonated water?",
+                "What would be a good name for a company that makes colorful socks?",
+                "What would be a good name for a company that sells carbonated water?",
             ]
         )
 
