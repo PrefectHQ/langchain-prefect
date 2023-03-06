@@ -171,7 +171,11 @@ class RecordLLMCalls(ContextDecorator):
         self.decorator_kwargs = decorator_kwargs
 
     def __enter__(self):
-        """Called when entering the context manager."""
+        """Called when entering the context manager.
+
+        This is what would need to be changed if Langchain started making
+        LLM api calls in a different place.
+        """
         self.patched_methods = []
         for cls in BaseLLM.__subclasses__():
             self._patch_method(cls, "agenerate", record_llm_call)

@@ -1,7 +1,6 @@
 """Examples of how to use the prefect plugin for langchain."""
-
+from langchain import document_loaders
 from langchain.agents import initialize_agent, load_tools
-from langchain.document_loaders.directory import DirectoryLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.llms import OpenAI, OpenAIChat
 from prefect import flow
@@ -52,12 +51,12 @@ def record_call_using_openai_chat():
         chatbot("Who is Bill Gates?")
 
 
-def record_call_using_qa_with_sources_chain():
+def record_call_using_qa_with_sources_chain_SOTU():
     """Demonstrate LLM call wrapped when using a QA with sources chain.
 
     Defaults to running local ChromaDB vectorstore for embeddings.
     """
-    loader = DirectoryLoader("context")
+    loader = document_loaders.DirectoryLoader("context")
     index = VectorstoreIndexCreator().from_loaders([loader])
     query = "What did the president say about Ketanji Brown Jackson?"
 
@@ -65,10 +64,26 @@ def record_call_using_qa_with_sources_chain():
         index.query_with_sources(query)
 
 
-# if __name__ == "__main__":
-# import asyncio
-# asyncio.run(record_call_using_callable_llm_async())
-# record_call_using_callable_llm()
-# record_calls_using_agent()
-# record_call_using_qa_with_sources_chain()
-# record_call_using_openai_chat()
+def record_call_using_qa_with_sources_chain_prefect_docs():
+    """Demonstrate LLM call wrapped when using a QA with sources chain.
+
+    Defaults to running local ChromaDB vectorstore for embeddings.
+    """
+    loader = document_loaders.WebBaseLoader("https://docs.prefect.io/")
+    index = VectorstoreIndexCreator().from_loaders([loader])
+    query = "What types of notifications are supported in Prefect 2?"
+
+    with RecordLLMCalls(
+        tags={index.vectorstore.__class__.__name__}, max_prompt_tokens=1e4
+    ):
+        index.query_with_sources(query)
+
+
+if __name__ == "__main__":
+    # import asyncio
+    # asyncio.run(record_call_using_callable_llm_async())
+    # record_call_using_callable_llm()
+    # record_calls_using_agent()
+    # record_call_using_qa_with_sources_chain_SOTU()
+    record_call_using_qa_with_sources_chain_prefect_docs()
+    # record_call_using_openai_chat()
