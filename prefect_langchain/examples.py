@@ -1,5 +1,6 @@
 """Examples of how to use the prefect plugin for langchain."""
 
+from langchain.agents import initialize_agent, load_tools
 from langchain.document_loaders.directory import DirectoryLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.llms import OpenAI, OpenAIChat
@@ -26,6 +27,19 @@ async def record_call_using_callable_llm_async():
         )
 
 
+def record_call_using_agent():
+    llm = OpenAI(temperature=0)
+    tools = load_tools(["llm-math"], llm=llm)
+    agent = initialize_agent(
+        tools, llm, agent="zero-shot-react-description", verbose=True
+    )
+    with RecordLLMCalls():
+        agent.run(
+            "How old is the current Dalai Lama? "
+            "What is his age divided by 2 (rounded to the nearest integer)?"
+        )
+
+
 def record_call_using_openai_chat():
     """Demonstrate LLM call wrapped when using a chatbot."""
     with RecordLLMCalls():
@@ -46,9 +60,10 @@ def record_call_using_qa_with_sources_chain():
         index.query_with_sources(query)
 
 
-# if __name__ == "__main__":
-# import asyncio
-# asyncio.run(record_call_using_callable_llm_async())
-# record_call_using_callable_llm()
-# record_call_using_qa_with_sources_chain()
-# record_call_using_openai_chat()
+if __name__ == "__main__":
+    # import asyncio
+    # asyncio.run(record_call_using_callable_llm_async())
+    # record_call_using_callable_llm()
+    record_call_using_agent()
+    # record_call_using_qa_with_sources_chain()
+    # record_call_using_openai_chat()
