@@ -119,7 +119,8 @@ class RecordLLMCalls(ContextDecorator):
     """Context manager for patching LLM calls with a prefect flow."""
 
     def __init__(self, **decorator_kwargs):
-        """Constructor for `RecordLLMCalls`. Accepts `tags`, `flow_kwargs`, and `max_prompt_tokens`.
+        """Constructor for `RecordLLMCalls`.
+            Accepts `tags`, `flow_kwargs`, and `max_prompt_tokens`.
 
         Example:
             Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
@@ -130,6 +131,22 @@ class RecordLLMCalls(ContextDecorator):
             >>>        "What would be a good company name "
             >>>        "for a company that makes carbonated water?"
             >>>    )
+
+            Track many LLM calls when using a langchain agent
+
+            >>> llm = OpenAI(temperature=0)
+            >>> tools = load_tools(["llm-math"], llm=llm)
+            >>> agent = initialize_agent(tools, llm)
+
+            >>> @flow
+            >>> def my_flow():  # noqa: D103
+            >>>     agent.run(
+            >>>         "How old is the current Dalai Lama? "
+            >>>         "What is his age divided by 2 (rounded to the nearest integer)?"
+            >>>     )
+
+            >>> with RecordLLMCalls():
+            >>>     my_flow()
 
             Create an async flow upon calling `OpenAI.agenerate`:
 

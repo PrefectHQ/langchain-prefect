@@ -32,9 +32,7 @@ def record_calls_using_agent():
     """Demonstrate LLM calls wrapped when using an agent."""
     llm = OpenAI(temperature=0)
     tools = load_tools(["llm-math"], llm=llm)
-    agent = initialize_agent(
-        tools, llm, agent="zero-shot-react-description", verbose=True
-    )
+    agent = initialize_agent(tools, llm)
 
     @flow
     def my_flow():  # noqa: D103
