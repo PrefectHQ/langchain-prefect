@@ -78,7 +78,7 @@ def record_llm_call(
     func: Callable[..., LLMResult],
     tags: set | None = None,
     flow_kwargs: dict | None = None,
-    max_prompt_tokens: int = int(1e3),
+    max_prompt_tokens: int | None = int(1e3),
 ) -> Callable[..., Flow]:
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
@@ -95,7 +95,7 @@ def record_llm_call(
         llm_endpoint = invocation_artifact.content["llm_endpoint"]
         text_input = invocation_artifact.content["text_input"]
 
-        if num_tokens(text_input) > max_prompt_tokens:
+        if max_prompt_tokens and num_tokens(text_input) > max_prompt_tokens:
             raise ValueError(
                 f"Prompt is too long - it contains {num_tokens(text_input)} tokens"
                 f" and {max_prompt_tokens=}. Did not call {llm_endpoint}."
@@ -118,7 +118,7 @@ class RecordLLMCalls(ContextDecorator):
     """Context manager for patching LLM calls with a prefect flow."""
 
     def __init__(self, **decorator_kwargs):
-        """Pass tags and flow_kwargs to the decorator.
+        """Constructor for `RecordLLMCalls`. Accepts `tags`, `flow_kwargs`, and `max_prompt_tokens`.
 
         Example:
             Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
@@ -128,6 +128,17 @@ class RecordLLMCalls(ContextDecorator):
             >>>    llm(
             >>>        "What would be a good company name "
             >>>        "for a company that makes carbonated water?"
+            >>>    )
+
+            Create an async flow upon calling `OpenAI.agenerate`:
+
+            >>> with RecordLLMCalls():
+            >>>    llm = OpenAI(temperature=0.9)
+            >>>    await llm.agenerate(
+            >>>        [
+            >>>            "What would be a good name for a company that makes colorful socks?",
+            >>>            "What would be a good name for a company that sells carbonated water?",
+            >>>        ]
             >>>    )
 
             Create a flow for LLM calls and enforce a max number of tokens in the prompt: # noqa: E501
