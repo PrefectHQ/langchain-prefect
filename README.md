@@ -63,7 +63,7 @@ with RecordLLMCalls(tags={"agent"}):
 ```
 ![](docs/img/LLMagentUI.png)
 
-Find more examples [here](prefect_langchain/examples.py).
+Find more examples [here](examples.py).
 
 ## Resources
 ### Installation
