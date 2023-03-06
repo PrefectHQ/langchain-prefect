@@ -18,78 +18,36 @@
         <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
 </p>
 
-Visit the full docs [here](https://PrefectHQ.github.io/prefect-langchain) to see additional examples and the API reference.
-
-Orchestrate and observe tools built with langchain.
+Orchestrate and observe tools built with langchain using Prefect.
 
 
-<!--- ### Add a real-world example of how to use this Collection here
 
-Offer some motivation on why this helps.
+## Examples 
 
-After installing `prefect-langchain` and [saving the credentials](#saving-credentials-to-block), you can easily use it within your flows to help you achieve the aforementioned benefits!
-
+Call an LLM and track the invocation with Prefect:
 ```python
-from prefect import flow, get_run_logger
-```
+from langchain.llms import OpenAI
+from prefect_langchain.plugins import RecordLLMCalls
 
---->
+with RecordLLMCalls():
+    llm = OpenAI(temperature=0.9)
+    text = (
+        "What would be a good company name for a company that makes colorful socks?"
+    )
+    llm(text)
+```
+and a flow run will be created to track the invocation of the LLM:
+
+![](docs/img/LLMinvokeUI.png)
 
 ## Resources
-
-For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://docs.prefect.io/collections/usage/)!
-
 ### Installation
-
-Install `prefect-langchain` with `pip`:
 
 ```bash
 pip install prefect-langchain
 ```
 
-Requires an installation of Python 3.7+.
-
-We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.
-
-These tasks are designed to work with Prefect 2.0. For more information about how to use Prefect, please refer to the [Prefect documentation](https://docs.prefect.io/).
-
-<!--- ### Saving credentials to block
-
-Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://docs.prefect.io/ui/blocks/).
-
-Below is a walkthrough on saving block documents through code.
-
-1. Head over to <SERVICE_URL>.
-2. Login to your <SERVICE> account.
-3. Click "+ Create new secret key".
-4. Copy the generated API key.
-5. Create a short script, replacing the placeholders (or do so in the UI).
-
-```python
-from prefect_langchain import Block
-Block(api_key="API_KEY_PLACEHOLDER").save("BLOCK_NAME_PLACEHOLDER")
-```
-
-Congrats! You can now easily load the saved block, which holds your credentials:
-
-```python
-from prefect_langchain import Block
-Block.load("BLOCK_NAME_PLACEHOLDER")
-```
-
-!!! info "Registering blocks"
-
-    Register blocks in this module to
-    [view and edit them](https://docs.prefect.io/ui/blocks/)
-    on Prefect Cloud:
-
-    ```bash
-    prefect block register -m prefect_langchain
-    ```
-
-A list of available blocks in `prefect-langchain` and their setup instructions can be found [here](https://PrefectHQ.github.io/prefect-langchain/blocks_catalog).
-
---->
+Requires an installation of Python 3.10+.
 
 ### Feedback
 
