@@ -6,7 +6,7 @@ from typing import Any, Callable
 import pendulum
 from langchain.llms.base import BaseLLM
 from langchain.schema import LLMResult
-from prefect import flow
+from prefect import Flow, flow
 from prefect import tags as prefect_tags
 from prefect.utilities.asyncutils import is_async_fn
 from pydantic import BaseModel
@@ -24,7 +24,7 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
     """Will eventually return an artifact."""
 
     llm_endpoint = args[0].__module__
-    text_input = args[-1]
+    text_input = str(args[-1])
 
     return NotAnArtifact(
         name="LLM Invocation Summary",
@@ -43,8 +43,11 @@ def parse_llm_result(llm_result: LLMResult) -> NotAnArtifact:
 
 
 def flow_wrapped_fn(
-    func: Callable[..., LLMResult], *args, **kwargs
-) -> Callable[..., LLMResult]:
+    func: Callable[..., LLMResult],
+    flow_kwargs,
+    *args,
+    **kwargs,
+) -> Flow:
     """Define a function to be wrapped in a flow depending on whether
     the original function is sync or async."""
     if is_async_fn(func):
@@ -56,7 +59,7 @@ def flow_wrapped_fn(
             print(f"Recieved: {parse_llm_result(llm_result)}")
             return llm_result
 
-        return execute_async_llm_call
+        return flow(**flow_kwargs)(execute_async_llm_call)
     else:
 
         def execute_llm_call(text_input: str, llm_endpoint: str):
@@ -66,7 +69,7 @@ def flow_wrapped_fn(
             print(f"Recieved: {parse_llm_result(llm_result)}")
             return llm_result
 
-        return execute_llm_call
+        return flow(**flow_kwargs)(execute_llm_call)
 
 
 def record_llm_call(
@@ -86,13 +89,13 @@ def record_llm_call(
 
         llm_endpoint, text_input, _ = invocation_artifact.content.values()
 
-        llm_generate_flow = flow(**flow_kwargs)(flow_wrapped_fn(func, *args, **kwargs))
+        llm_generate = flow_wrapped_fn(func, flow_kwargs, *args, **kwargs)
 
         with prefect_tags(*[llm_endpoint, *tags]):
-            return llm_generate_flow.with_options(
+            return llm_generate.with_options(
                 flow_run_name=f"Calling {llm_endpoint} at {pendulum.now().strftime('%Y-%m-%d %H:%M:%S')}"  # noqa: E501
             )(
-                text_input=text_input[0],
+                text_input=text_input,
                 llm_endpoint=llm_endpoint,
             )
 
