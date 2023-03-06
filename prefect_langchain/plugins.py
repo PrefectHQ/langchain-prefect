@@ -9,7 +9,6 @@ from langchain.schema import LLMResult
 from prefect import flow
 from prefect import tags as prefect_tags
 from prefect.utilities.asyncutils import is_async_fn
-from prefect.utilities.collections import listrepr
 from pydantic import BaseModel
 
 
@@ -25,7 +24,7 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
     """Will eventually return an artifact."""
 
     llm_endpoint = args[0].__module__
-    text_input = listrepr(args[-1])
+    text_input = args[-1]
 
     return NotAnArtifact(
         name="LLM Invocation Summary",
@@ -41,6 +40,33 @@ def parse_llm_result(llm_result: LLMResult) -> NotAnArtifact:
         description="The result of the LLM invocation.",
         content=llm_result,
     )
+
+
+def flow_wrapped_fn(
+    func: Callable[..., LLMResult], *args, **kwargs
+) -> Callable[..., LLMResult]:
+    """Define a function to be wrapped in a flow depending on whether
+    the original function is sync or async."""
+    if is_async_fn(func):
+
+        async def execute_async_llm_call(text_input: str, llm_endpoint: str):
+            """async flow for async LLM calls via `SubclassofBaseLLM.agenerate`"""
+            print(f"Sending {text_input} to {llm_endpoint}")
+            llm_result: LLMResult = await func(*args, **kwargs)
+            print(f"Recieved: {parse_llm_result(llm_result)}")
+            return llm_result
+
+        return execute_async_llm_call
+    else:
+
+        def execute_llm_call(text_input: str, llm_endpoint: str):
+            """sync flow for sync LLM calls via `SubclassofBaseLLM.generate`"""
+            print(f"Sending {text_input} to {llm_endpoint}")
+            llm_result: LLMResult = func(*args, **kwargs)
+            print(f"Recieved: {parse_llm_result(llm_result)}")
+            return llm_result
+
+        return execute_llm_call
 
 
 def record_llm_call(
@@ -59,39 +85,16 @@ def record_llm_call(
         invocation_artifact = llm_invocation_summary(*args, **kwargs)
 
         llm_endpoint, text_input, _ = invocation_artifact.content.values()
-        tags.add(llm_endpoint)
 
-        if is_async_fn(func):
+        llm_generate_flow = flow(**flow_kwargs)(flow_wrapped_fn(func, *args, **kwargs))
 
-            @flow(**flow_kwargs)
-            async def execute_async_llm_call(
-                text_input: str = text_input, llm_endpoint: str = llm_endpoint
-            ):
-                """async flow for async LLM calls via `SubclassofBaseLLM.agenerate`"""
-                print(f"Sending {text_input} to {llm_endpoint}")
-                llm_result: LLMResult = await func(*args, **kwargs)
-                print(f"Recieved: {parse_llm_result(llm_result)}")
-                return llm_result
-
-            generate_fn = execute_async_llm_call
-        else:
-
-            @flow(**flow_kwargs)
-            def execute_llm_call(
-                text_input: str = text_input, llm_endpoint: str = llm_endpoint
-            ):
-                """sync flow for sync LLM calls via `SubclassofBaseLLM.generate`"""
-                print(f"Sending {text_input} to {llm_endpoint}")
-                llm_result: LLMResult = func(*args, **kwargs)
-                print(f"Recieved: {parse_llm_result(llm_result)}")
-                return llm_result
-
-            generate_fn = execute_llm_call
-
-        with prefect_tags(*tags):
-            return generate_fn.with_options(
-                flow_run_name=f"Calling {llm_endpoint} at {pendulum.now().strftime('%Y-%m-%d %H:%M:%S')})"  # noqa: E501
-            )()
+        with prefect_tags(*[llm_endpoint, *tags]):
+            return llm_generate_flow.with_options(
+                flow_run_name=f"Calling {llm_endpoint} at {pendulum.now().strftime('%Y-%m-%d %H:%M:%S')}"  # noqa: E501
+            )(
+                text_input=text_input[0],
+                llm_endpoint=llm_endpoint,
+            )
 
     return wrapper
 
@@ -100,7 +103,18 @@ class RecordLLMCalls(ContextDecorator):
     """Context manager for patching LLM calls with a prefect flow."""
 
     def __init__(self, **decorator_kwargs):
-        """Initialize the context manager."""
+        """Pass tags and flow_kwargs to the decorator.
+
+        Example:
+            Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
+
+            >>> with RecordLLMCalls(tags={"a_custom_tag"}):
+            >>>    llm = OpenAI(temperature=0.9)
+            >>>    llm(
+            >>>        "What would be a good company name "
+            >>>        "for a company that makes carbonated water?"
+            >>>    )
+        """
         self.decorator_kwargs = decorator_kwargs
 
     def __enter__(self):
