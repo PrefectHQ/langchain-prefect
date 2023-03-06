@@ -9,7 +9,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
@@ -35,7 +34,3 @@ jobs:
         run: |
           coverage run --branch -m pytest tests -vv
           coverage report
-
-      - name: Run mkdocs build
-        run: |
-          mkdocs build --verbose --clean
