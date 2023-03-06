@@ -11,6 +11,8 @@ from prefect import tags as prefect_tags
 from prefect.utilities.asyncutils import is_async_fn
 from pydantic import BaseModel
 
+from prefect_langchain.utilities import num_tokens
+
 
 class NotAnArtifact(BaseModel):
     """Placeholder class for soon-to-come `Artifact`."""
@@ -48,8 +50,8 @@ def flow_wrapped_fn(
     *args,
     **kwargs,
 ) -> Flow:
-    """Define a function to be wrapped in a flow depending on whether
-    the original function is sync or async."""
+    """Define a function to be wrapped in a flow depending
+    on whether the original function is sync or async."""
     if is_async_fn(func):
 
         async def execute_async_llm_call(text_input: str, llm_endpoint: str):
@@ -76,7 +78,8 @@ def record_llm_call(
     func: Callable[..., LLMResult],
     tags: set | None = None,
     flow_kwargs: dict | None = None,
-):
+    max_prompt_tokens: int = int(1e3),
+) -> Callable[..., Flow]:
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
     tags = tags or set()
@@ -85,9 +88,18 @@ def record_llm_call(
     @wraps(func)
     def wrapper(*args, **kwargs):
         """wrapper for LLM calls"""
-        invocation_artifact = llm_invocation_summary(*args, **kwargs)
+        invocation_artifact = llm_invocation_summary(
+            invocation_fn=func, *args, **kwargs
+        )
 
-        llm_endpoint, text_input, _ = invocation_artifact.content.values()
+        llm_endpoint = invocation_artifact.content["llm_endpoint"]
+        text_input = invocation_artifact.content["text_input"]
+
+        if num_tokens(text_input) > max_prompt_tokens:
+            raise ValueError(
+                f"Prompt is too long - it contains {num_tokens(text_input)} tokens"
+                f" and {max_prompt_tokens=}. Did not call {llm_endpoint}."
+            )
 
         llm_generate = flow_wrapped_fn(func, flow_kwargs, *args, **kwargs)
 
@@ -112,6 +124,15 @@ class RecordLLMCalls(ContextDecorator):
             Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
 
             >>> with RecordLLMCalls(tags={"a_custom_tag"}):
+            >>>    llm = OpenAI(temperature=0.9)
+            >>>    llm(
+            >>>        "What would be a good company name "
+            >>>        "for a company that makes carbonated water?"
+            >>>    )
+
+            Create a flow for LLM calls and enforce a max number of tokens in the prompt: # noqa: E501
+
+            >>> with RecordLLMCalls(max_prompt_tokens=100):
             >>>    llm = OpenAI(temperature=0.9)
             >>>    llm(
             >>>        "What would be a good company name "

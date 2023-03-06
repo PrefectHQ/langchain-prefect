@@ -11,20 +11,20 @@ def record_call_using_callable_llm():
     """Test LLM call wrapped when using a callable LLM."""
     with RecordLLMCalls():
         llm = OpenAI(temperature=0.9)
-        text = (
-            "What would be a good company name for a company that makes colorful socks?"
-        )
-        llm(text)
+        llm("What would be a good name for a " "company that makes colorful socks?")
 
 
 async def record_call_using_callable_llm_async():
     """Test LLM call wrapped when using a callable LLM."""
     with RecordLLMCalls():
         llm = OpenAI(temperature=0.9)
-        text = (
-            "What would be a good company name for a company that makes colorful socks?"
+        await llm.agenerate(
+            [
+                "What would be a good name for a " "company that makes colorful socks?",
+                "What would be a good name for a "
+                "company that makes carbonated water?",
+            ]
         )
-        await llm.agenerate(text)
 
 
 def record_call_using_qa_with_sources_chain():
@@ -41,7 +41,9 @@ def record_call_using_qa_with_sources_chain():
 
 
 if __name__ == "__main__":
-    # import asyncio
+    import asyncio
+
+    asyncio.run(record_call_using_callable_llm_async())
+
     record_call_using_callable_llm()
-    # asyncio.run(record_call_using_callable_llm_async())
-    # record_call_using_qa_with_sources_chain()
+    record_call_using_qa_with_sources_chain()
