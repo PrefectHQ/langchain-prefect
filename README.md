@@ -60,7 +60,7 @@ def my_flow():  # noqa: D103
         "What is his age divided by 2 (rounded to the nearest integer)?"
     )
 
-with RecordLLMCalls():
+with RecordLLMCalls(tags={"agent"}):
     my_flow()
 ```
 ![](docs/img/LLMagentUI.png)

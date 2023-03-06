@@ -1,4 +1,5 @@
 """Module for defining Prefect plugins for langchain."""
+
 from contextlib import ContextDecorator
 from functools import wraps
 from typing import Any, Callable

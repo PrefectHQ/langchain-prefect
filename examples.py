@@ -43,7 +43,7 @@ def record_calls_using_agent():
             "What is his age divided by 2 (rounded to the nearest integer)?"
         )
 
-    with RecordLLMCalls():
+    with RecordLLMCalls(tags={"agent"}):
         my_flow()
 
 
@@ -67,10 +67,10 @@ def record_call_using_qa_with_sources_chain():
         index.query_with_sources(query)
 
 
-if __name__ == "__main__":
-    # import asyncio
-    # asyncio.run(record_call_using_callable_llm_async())
-    # record_call_using_callable_llm()
-    record_calls_using_agent()
-    # record_call_using_qa_with_sources_chain()
-    # record_call_using_openai_chat()
+# if __name__ == "__main__":
+# import asyncio
+# asyncio.run(record_call_using_callable_llm_async())
+# record_call_using_callable_llm()
+# record_calls_using_agent()
+# record_call_using_qa_with_sources_chain()
+# record_call_using_openai_chat()
