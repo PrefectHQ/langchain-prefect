@@ -22,7 +22,7 @@ Orchestrate and observe tools built with langchain using Prefect.
 
 
 
-## Examples 
+## Example Usage
 
 Call an LLM and track the invocation with Prefect:
 ```python
@@ -39,6 +39,8 @@ with RecordLLMCalls():
 and a flow run will be created to track the invocation of the LLM:
 
 ![](docs/img/LLMinvokeUI.png)
+
+Find more examples [here](prefect_langchain/examples.py).
 
 ## Resources
 ### Installation
