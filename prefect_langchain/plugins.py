@@ -118,7 +118,7 @@ class RecordLLMCalls(ContextDecorator):
     """Context manager for patching LLM calls with a prefect flow."""
 
     def __init__(self, **decorator_kwargs):
-        """Pass tags and flow_kwargs to the decorator.
+        """Constructor for `RecordLLMCalls`. Accepts `tags`, `flow_kwargs`, and `max_prompt_tokens`.
 
         Example:
             Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
@@ -128,6 +128,17 @@ class RecordLLMCalls(ContextDecorator):
             >>>    llm(
             >>>        "What would be a good company name "
             >>>        "for a company that makes carbonated water?"
+            >>>    )
+
+            Create an async flow upon calling `OpenAI.agenerate`:
+
+            >>> with RecordLLMCalls():
+            >>>    llm = OpenAI(temperature=0.9)
+            >>>    await llm.agenerate(
+            >>>        [
+            >>>            "What would be a good name for a company that makes colorful socks?",
+            >>>            "What would be a good name for a company that sells carbonated water?",
+            >>>        ]
             >>>    )
 
             Create a flow for LLM calls and enforce a max number of tokens in the prompt: # noqa: E501
