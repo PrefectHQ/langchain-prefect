@@ -8,14 +8,14 @@ from prefect_langchain.plugins import RecordLLMCalls
 
 
 def record_call_using_callable_llm():
-    """Test LLM call wrapped when using a callable LLM."""
+    """Demonstrate LLM call wrapped when using a callable LLM."""
     with RecordLLMCalls():
         llm = OpenAI(temperature=0.9)
         llm("What would be a good name for a company that makes colorful socks?")
 
 
 async def record_call_using_callable_llm_async():
-    """Test LLM call wrapped when using a callable LLM."""
+    """Demonstrate LLM call wrapped when using a callable LLM."""
     with RecordLLMCalls():
         llm = OpenAI(temperature=0.9)
         await llm.agenerate(
@@ -27,14 +27,14 @@ async def record_call_using_callable_llm_async():
 
 
 def record_call_using_openai_chat():
-    """Test LLM call wrapped when using a chatbot."""
+    """Demonstrate LLM call wrapped when using a chatbot."""
     with RecordLLMCalls():
         chatbot = OpenAIChat()
         chatbot("Who is Bill Gates?")
 
 
 def record_call_using_qa_with_sources_chain():
-    """Test LLM call wrapped when using a QA with sources chain.
+    """Demonstrate LLM call wrapped when using a QA with sources chain.
 
     Defaults to running local ChromaDB vectorstore for embeddings.
     """

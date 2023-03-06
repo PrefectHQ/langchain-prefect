@@ -78,7 +78,7 @@ def record_llm_call(
     func: Callable[..., LLMResult],
     tags: set | None = None,
     flow_kwargs: dict | None = None,
-    max_prompt_tokens: int = int(1e3),
+    max_prompt_tokens: int | None = int(1e3),
 ) -> Callable[..., Flow]:
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
@@ -95,7 +95,7 @@ def record_llm_call(
         llm_endpoint = invocation_artifact.content["llm_endpoint"]
         text_input = invocation_artifact.content["text_input"]
 
-        if num_tokens(text_input) > max_prompt_tokens:
+        if max_prompt_tokens and num_tokens(text_input) > max_prompt_tokens:
             raise ValueError(
                 f"Prompt is too long - it contains {num_tokens(text_input)} tokens"
                 f" and {max_prompt_tokens=}. Did not call {llm_endpoint}."
