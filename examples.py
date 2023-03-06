@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # import asyncio
     # asyncio.run(record_call_using_callable_llm_async())
     # record_call_using_callable_llm()
-    # record_calls_using_agent()
+    record_calls_using_agent()
     # record_call_using_qa_with_sources_chain_SOTU()
-    record_call_using_qa_with_sources_chain_prefect_docs()
+    # record_call_using_qa_with_sources_chain_prefect_docs()
     # record_call_using_openai_chat()
