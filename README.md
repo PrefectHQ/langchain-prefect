@@ -24,7 +24,7 @@ Orchestrate and observe tools built with langchain using Prefect.
 
 ## Example Usage
 
-Call an LLM and track the invocation with Prefect:
+### Call an LLM and track the invocation with Prefect:
 ```python
 from langchain.llms import OpenAI
 from prefect_langchain.plugins import RecordLLMCalls
@@ -39,6 +39,30 @@ with RecordLLMCalls():
 and a flow run will be created to track the invocation of the LLM:
 
 ![](docs/img/LLMinvokeUI.png)
+
+### Run several LLM calls via langchain agent as Prefect subflows:
+```python
+from langchain.agents import initialize_agent, load_tools
+from langchain.llms import OpenAI
+
+from prefect import flow
+
+llm = OpenAI(temperature=0)
+tools = load_tools(["llm-math"], llm=llm)
+agent = initialize_agent(
+    tools, llm, agent="zero-shot-react-description", verbose=True
+)
+
+@flow
+def my_flow():  # noqa: D103
+    agent.run(
+        "How old is the current Dalai Lama? "
+        "What is his age divided by 2 (rounded to the nearest integer)?"
+    )
+
+with RecordLLMCalls():
+    my_flow()
+```
 
 Find more examples [here](prefect_langchain/examples.py).
 
