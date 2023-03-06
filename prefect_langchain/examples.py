@@ -2,7 +2,7 @@
 
 from langchain.document_loaders.directory import DirectoryLoader
 from langchain.indexes import VectorstoreIndexCreator
-from langchain.llms import OpenAI
+from langchain.llms import OpenAI, OpenAIChat
 
 from prefect_langchain.plugins import RecordLLMCalls
 
@@ -26,6 +26,13 @@ async def record_call_using_callable_llm_async():
         )
 
 
+def record_call_using_openai_chat():
+    """Test LLM call wrapped when using a chatbot."""
+    with RecordLLMCalls():
+        chatbot = OpenAIChat()
+        chatbot("Who is Bill Gates?")
+
+
 def record_call_using_qa_with_sources_chain():
     """Test LLM call wrapped when using a QA with sources chain.
 
@@ -39,10 +46,9 @@ def record_call_using_qa_with_sources_chain():
         index.query_with_sources(query)
 
 
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(record_call_using_callable_llm_async())
-
-    record_call_using_callable_llm()
-    record_call_using_qa_with_sources_chain()
+# if __name__ == "__main__":
+# import asyncio
+# asyncio.run(record_call_using_callable_llm_async())
+# record_call_using_callable_llm()
+# record_call_using_qa_with_sources_chain()
+# record_call_using_openai_chat()
