@@ -63,6 +63,7 @@ def my_flow():  # noqa: D103
 with RecordLLMCalls():
     my_flow()
 ```
+![](docs/img/LLMagentUI.png)
 
 Find more examples [here](prefect_langchain/examples.py).
 
