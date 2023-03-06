@@ -1,18 +1,20 @@
 """Module for defining Prefect plugins for langchain."""
-
+from contextlib import ContextDecorator
 from functools import wraps
-from typing import Any
+from typing import Any, Callable
 
+import pendulum
 from langchain.llms.base import BaseLLM
 from langchain.schema import LLMResult
 from prefect import flow
+from prefect import tags as prefect_tags
 from prefect.utilities.asyncutils import is_async_fn
 from prefect.utilities.collections import listrepr
 from pydantic import BaseModel
 
 
 class NotAnArtifact(BaseModel):
-    """Placeholder class for artifacts that are not yet implemented."""
+    """Placeholder class for soon-to-come `Artifact`."""
 
     name: str
     description: str
@@ -21,87 +23,101 @@ class NotAnArtifact(BaseModel):
 
 def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
     """Will eventually return an artifact."""
-    llm_endpoint = str(args[0].client)
+
+    llm_endpoint = args[0].__module__
     text_input = listrepr(args[-1])
 
     return NotAnArtifact(
         name="LLM Invocation Summary",
-        description="Summary of the LLM invocation.",
-        content={"llm_endpoint": llm_endpoint, "text_input": text_input},
+        description=f"Query {llm_endpoint}",
+        content={"llm_endpoint": llm_endpoint, "text_input": text_input, **kwargs},
     )
 
 
 def parse_llm_result(llm_result: LLMResult) -> NotAnArtifact:
     """Will eventually return an artifact."""
-    output = listrepr([g[0].text.strip("\n") for g in llm_result.generations])
-    token_usage = llm_result.llm_output["token_usage"]
-
     return NotAnArtifact(
         name="LLM Result",
         description="The result of the LLM invocation.",
-        content={"output": output, "token_usage": token_usage},
+        content=llm_result,
     )
 
 
-def record_llm_call(func):
-    """Decorator for warpping LLM calls made by langchain with a prefect flow."""
+def record_llm_call(
+    func: Callable[..., LLMResult],
+    tags: set | None = None,
+    flow_kwargs: dict | None = None,
+):
+    """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
-    flow_kwargs = dict(name="Execute LLM Call", log_prints=True)
+    tags = tags or set()
+    flow_kwargs = flow_kwargs or dict(name="Execute LLM Call", log_prints=True)
 
-    if is_async_fn(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        """wrapper for LLM calls"""
+        invocation_artifact = llm_invocation_summary(*args, **kwargs)
 
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            """async wrapper for LLM calls"""
-            invocation_artifact = llm_invocation_summary(*args, **kwargs)
+        llm_endpoint, text_input, _ = invocation_artifact.content.values()
+        tags.add(llm_endpoint)
 
-            llm_endpoint, text_input = invocation_artifact.content.values()
+        if is_async_fn(func):
 
             @flow(**flow_kwargs)
-            async def execute_llm_call(llm_endpoint: str, text_input: str):
-                """async flow for LLM calls"""
+            async def execute_async_llm_call(
+                text_input: str = text_input, llm_endpoint: str = llm_endpoint
+            ):
+                """async flow for async LLM calls via `SubclassofBaseLLM.agenerate`"""
                 print(f"Sending {text_input} to {llm_endpoint}")
                 llm_result: LLMResult = await func(*args, **kwargs)
-
-                result_artifact = parse_llm_result(llm_result)
-
-                output, token_usage = result_artifact.content.values()
-
-                print(f"Received output from LLM: {output}")
-                print(f"Token Usage: {token_usage!r}")
+                print(f"Recieved: {parse_llm_result(llm_result)}")
                 return llm_result
 
-            return execute_llm_call(llm_endpoint, text_input)
-
-    else:
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            """sync wrapper for LLM calls"""
-            invocation_artifact = llm_invocation_summary(*args, **kwargs)
-
-            llm_endpoint, text_input = invocation_artifact.content.values()
+            generate_fn = execute_async_llm_call
+        else:
 
             @flow(**flow_kwargs)
-            def execute_llm_call(llm_endpoint: str, text_input: str):
-                """async flow for LLM calls"""
+            def execute_llm_call(
+                text_input: str = text_input, llm_endpoint: str = llm_endpoint
+            ):
+                """sync flow for sync LLM calls via `SubclassofBaseLLM.generate`"""
                 print(f"Sending {text_input} to {llm_endpoint}")
                 llm_result: LLMResult = func(*args, **kwargs)
-
-                result_artifact = parse_llm_result(llm_result)
-
-                output, token_usage = result_artifact.content.values()
-
-                print(f"Received output from LLM: {output}")
-                print(f"Token Usage: {token_usage!r}")
+                print(f"Recieved: {parse_llm_result(llm_result)}")
                 return llm_result
 
-            return execute_llm_call(llm_endpoint, text_input)
+            generate_fn = execute_llm_call
+
+        with prefect_tags(*tags):
+            return generate_fn.with_options(
+                flow_run_name=f"Calling {llm_endpoint} at {pendulum.now().strftime('%Y-%m-%d %H:%M:%S')})"  # noqa: E501
+            )()
 
     return wrapper
 
 
-for cls in BaseLLM.__subclasses__():
-    print(f"Wrapping {cls.__name__}")
-    cls.agenerate = record_llm_call(cls.agenerate)
-    cls.generate = record_llm_call(cls.generate)
+class RecordLLMCalls(ContextDecorator):
+    """Context manager for patching LLM calls with a prefect flow."""
+
+    def __init__(self, **decorator_kwargs):
+        """Initialize the context manager."""
+        self.decorator_kwargs = decorator_kwargs
+
+    def __enter__(self):
+        """Called when entering the context manager."""
+        self.patched_methods = []
+        for cls in BaseLLM.__subclasses__():
+            self._patch_method(cls, "agenerate", record_llm_call)
+            self._patch_method(cls, "generate", record_llm_call)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Called when exiting the context manager."""
+        for cls, method_name, original_method in self.patched_methods:
+            setattr(cls, method_name, original_method)
+
+    def _patch_method(self, cls, method_name, decorator):
+        """Patch a method on a class with a decorator."""
+        original_method = getattr(cls, method_name)
+        modified_method = decorator(original_method, **self.decorator_kwargs)
+        setattr(cls, method_name, modified_method)
+        self.patched_methods.append((cls, method_name, original_method))
