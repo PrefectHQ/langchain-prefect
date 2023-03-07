@@ -26,7 +26,6 @@ def record_llm_call(
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
     tags = tags or set()
-    flow_kwargs = flow_kwargs or dict(name="Execute LLM Call", log_prints=True)
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -93,12 +92,12 @@ class RecordLLMCalls(ContextDecorator):
             >>>    llm = OpenAI(temperature=0.9)
             >>>    await llm.agenerate(
             >>>        [
-            >>>            "What would be a good name for a company that makes colorful socks?", # noqa: E501
-            >>>            "What would be a good name for a company that sells carbonated water?", # noqa: E501
+            >>>            "Good name for a company that makes colorful socks?",
+            >>>            "Good name for a company that sells carbonated water?",
             >>>        ]
             >>>    )
 
-            Create a flow for LLM calls and enforce a max number of tokens in the prompt: # noqa: E501
+            Create flow for LLM call and enforce a max number of tokens in the prompt:
 
             >>> with RecordLLMCalls(max_prompt_tokens=100):
             >>>    llm = OpenAI(temperature=0.9)
