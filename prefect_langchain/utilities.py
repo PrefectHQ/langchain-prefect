@@ -42,9 +42,7 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
 
     llm_endpoint = subcls.__module__
 
-    summary = (
-        f"Sending {listrepr([truncate(p) for p in prompts])} " f"to {llm_endpoint}..."
-    )
+    summary = f"Sending {listrepr([truncate(p) for p in prompts])} to {llm_endpoint}..."
 
     return NotAnArtifact(
         name="LLM Invocation Summary",
