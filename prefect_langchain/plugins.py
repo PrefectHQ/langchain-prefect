@@ -4,7 +4,6 @@ from contextlib import ContextDecorator
 from functools import wraps
 from typing import Callable
 
-import pendulum
 from langchain.llms.base import BaseLLM
 from langchain.schema import LLMResult
 from prefect import Flow
@@ -48,7 +47,7 @@ def record_llm_call(
 
         with prefect_tags(*[llm_endpoint, *tags]):
             return llm_generate.with_options(
-                flow_run_name=f"Calling {llm_endpoint} at {pendulum.now().strftime('%Y-%m-%d %H:%M:%S')}"  # noqa: E501
+                flow_run_name=f"Calling {llm_endpoint}"  # noqa: E501
             )(llm_input=invocation_artifact)
 
     return wrapper
