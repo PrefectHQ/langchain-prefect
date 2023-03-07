@@ -19,7 +19,7 @@ def num_tokens(text: str | List[str]) -> int:
 
 
 def truncate(text, max_length: int = 300) -> str:
-    if len(text) >= max_length:
+    if len(text) > 3 and len(text) >= max_length:
         i = (max_length - 3) // 2
         return f"{text[:i]}...{text[-i:]}"
     return text
@@ -42,7 +42,10 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
 
     llm_endpoint = subcls.__module__
 
-    summary = f"Sending {listrepr([truncate(p) for p in prompts])} to {llm_endpoint}..."
+    summary = (
+        f"Sending {listrepr([truncate(p) for p in prompts])} "
+        f"to {llm_endpoint} via {invocation_fn!r}"
+    )
 
     return NotAnArtifact(
         name="LLM Invocation Summary",
@@ -68,12 +71,14 @@ def parse_llm_result(llm_result: LLMResult) -> NotAnArtifact:
 
 def flow_wrapped_fn(
     func: Callable[..., LLMResult],
-    flow_kwargs,
+    flow_kwargs: dict | None = None,
     *args,
     **kwargs,
 ) -> Flow:
     """Define a function to be wrapped in a flow depending
     on whether the original function is sync or async."""
+    flow_kwargs = flow_kwargs or dict(name="Execute LLM Call", log_prints=True)
+
     if is_async_fn(func):
 
         async def execute_async_llm_call(llm_input: NotAnArtifact) -> LLMResult:
