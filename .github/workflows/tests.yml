@@ -1,6 +1,16 @@
 name: Tests
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "prefect_langchain/**"
+      - "tests/**"
+      - "setup.py"
+      - "requirements*.txt"
+      - ".github/workflows/tests.yml"
+
 
 jobs:
   run-tests:
