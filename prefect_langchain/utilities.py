@@ -19,6 +19,7 @@ def num_tokens(text: str | List[str]) -> int:
 
 
 def truncate(text, max_length: int = 300) -> str:
+    """Truncate text to max_length."""
     if len(text) > 3 and len(text) >= max_length:
         i = (max_length - 3) // 2
         return f"{text[:i]}...{text[-i:]}"
