@@ -7,6 +7,8 @@ from prefect import flow
 
 from prefect_langchain.plugins import RecordLLMCalls
 
+""" ---- OpenAI examples ---- """
+
 
 def record_call_using_callable_llm():
     """Demonstrate LLM call wrapped when using a callable LLM."""
@@ -30,11 +32,12 @@ async def record_call_using_callable_llm_async():
 def record_calls_using_agent():
     """Demonstrate LLM calls wrapped when using an agent."""
     llm = OpenAI(temperature=0)
-    tools = load_tools(["llm-math"], llm=llm)
+    tools = load_tools(["llm-math"])
     agent = initialize_agent(tools, llm)
 
     @flow
-    def my_flow():  # noqa: D103
+    def my_flow():
+        """Flow wrapping any LLM calls made by the agent."""
         agent.run(
             "How old is the current Dalai Lama? "
             "What is his age divided by 2 (rounded to the nearest integer)?"
@@ -74,16 +77,31 @@ def record_call_using_qa_with_sources_chain_prefect_docs():
     query = "What types of notifications are supported in Prefect 2?"
 
     with RecordLLMCalls(
-        tags={index.vectorstore.__class__.__name__}, max_prompt_tokens=1e4
+        tags={index.vectorstore.__class__.__name__}, max_prompt_tokens=1000
     ):
         index.query_with_sources(query)
 
 
+""" ---- Huggingface examples ---- """
+
+
+def record_call_using_huggingfacehub():
+    """Demonstrate LLM call wrapped when using callable HF LLM."""
+    from langchain.llms import HuggingFaceHub
+
+    hf = HuggingFaceHub(repo_id="gpt2")
+    with RecordLLMCalls():
+        hf("How are you today?")
+
+
 if __name__ == "__main__":
     # import asyncio
+
     # asyncio.run(record_call_using_callable_llm_async())
-    # record_call_using_callable_llm()
-    record_calls_using_agent()
+    record_call_using_callable_llm()
+    # record_calls_using_agent()
     # record_call_using_qa_with_sources_chain_SOTU()
     # record_call_using_qa_with_sources_chain_prefect_docs()
     # record_call_using_openai_chat()
+
+    # record_call_using_huggingfacehub()

@@ -78,8 +78,6 @@ Requires an installation of Python 3.10+.
 
 If you encounter any bugs while using `prefect-langchain`, feel free to open an issue in the [prefect-langchain](https://github.com/zzstoatzz/prefect-langchain) repository.
 
-If you have any questions or issues while using `prefect-langchain`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack).
-
 Feel free to star or watch [`prefect-langchain`](https://github.com/zzstoatzz/prefect-langchain) for updates too!
 
 ### Contributing

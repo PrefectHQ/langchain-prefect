@@ -1,8 +1,98 @@
 """Utilities for the prefect_langchain package."""
 
+from typing import Any, Callable, List
+
 import tiktoken
+from langchain.schema import LLMResult
+from prefect import Flow, flow
+from prefect.utilities.asyncutils import is_async_fn
+from prefect.utilities.collections import listrepr
+from pydantic import BaseModel
 
 
-def num_tokens(text: str) -> int:
+def num_tokens(text: str | List[str]) -> int:
     """Return the number of tokens in the text."""
+    if isinstance(text, list):
+        text = "".join(text)
+
     return len(tiktoken.encoding_for_model("text-davinci-003").encode(text))
+
+
+def truncate(text, max_length: int = 300) -> str:
+    if len(text) >= max_length:
+        i = (max_length - 3) // 2
+        return f"{text[:i]}...{text[-i:]}"
+    return text
+
+
+class NotAnArtifact(BaseModel):
+    """Placeholder class for soon-to-come `Artifact`."""
+
+    name: str
+    description: str
+    content: Any
+
+
+def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
+    """Will eventually return an artifact."""
+
+    subcls, prompts, *rest = args
+
+    invocation_fn = kwargs.pop("invocation_fn")
+
+    llm_endpoint = subcls.__module__
+
+    summary = (
+        f"Sending {listrepr([truncate(p) for p in prompts])} " f"to {llm_endpoint}..."
+    )
+
+    return NotAnArtifact(
+        name="LLM Invocation Summary",
+        description=f"Query {llm_endpoint} via {invocation_fn.__name__}",
+        content={
+            "llm_endpoint": llm_endpoint,
+            "prompts": prompts,
+            "summary": summary,
+            "args": rest,
+            **kwargs,
+        },
+    )
+
+
+def parse_llm_result(llm_result: LLMResult) -> NotAnArtifact:
+    """Will eventually return an artifact."""
+    return NotAnArtifact(
+        name="LLM Result",
+        description="The result of the LLM invocation.",
+        content=llm_result,
+    )
+
+
+def flow_wrapped_fn(
+    func: Callable[..., LLMResult],
+    flow_kwargs,
+    *args,
+    **kwargs,
+) -> Flow:
+    """Define a function to be wrapped in a flow depending
+    on whether the original function is sync or async."""
+    if is_async_fn(func):
+
+        async def execute_async_llm_call(llm_input: NotAnArtifact) -> LLMResult:
+            """async flow for async LLM calls via `SubclassofBaseLLM.agenerate`"""
+            print(llm_input.content["summary"])
+            llm_result = await func(*args, **kwargs)
+            print(f"Recieved: {parse_llm_result(llm_result)!r}")
+            return llm_result
+
+        return flow(**flow_kwargs)(execute_async_llm_call)
+    else:
+
+        def execute_llm_call(llm_input: NotAnArtifact) -> LLMResult:
+            """sync flow for sync LLM calls via `SubclassofBaseLLM.generate`"""
+            print(llm_input.content["summary"])
+            llm_result = func(*args, **kwargs)
+            print(f"Recieved: {parse_llm_result(llm_result)!r}")
+            return llm_result
+
+        return flow(**flow_kwargs)(execute_llm_call)
