@@ -49,9 +49,15 @@ def record_calls_using_agent():
 
 def record_call_using_openai_chat():
     """Demonstrate LLM call wrapped when using a chatbot."""
+    messages = [
+        {"role": "system", "content": "You should speak like a pirate."},
+        {"role": "user", "content": "I don't care about frogs."},
+    ]
+
+    chatbot = OpenAIChat(prefix_messages=messages, temperature=0.9)
+
     with RecordLLMCalls():
-        chatbot = OpenAIChat()
-        chatbot("Who is Bill Gates?")
+        chatbot("what did I just say?")
 
 
 def record_call_using_qa_with_sources_chain_SOTU():
@@ -98,10 +104,10 @@ if __name__ == "__main__":
     # import asyncio
 
     # asyncio.run(record_call_using_callable_llm_async())
-    record_call_using_callable_llm()
+    # record_call_using_callable_llm()
     # record_calls_using_agent()
     # record_call_using_qa_with_sources_chain_SOTU()
     # record_call_using_qa_with_sources_chain_prefect_docs()
-    # record_call_using_openai_chat()
+    record_call_using_openai_chat()
 
     # record_call_using_huggingfacehub()

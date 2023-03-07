@@ -116,9 +116,10 @@ class RecordLLMCalls(ContextDecorator):
         LLM api calls in a different place.
         """
         self.patched_methods = []
-        for cls in BaseLLM.__subclasses__():
-            self._patch_method(cls, "agenerate", record_llm_call)
-            self._patch_method(cls, "generate", record_llm_call)
+
+        for subcls in BaseLLM.__subclasses__():
+            self._patch_method(subcls, "agenerate", record_llm_call)
+            self._patch_method(subcls, "generate", record_llm_call)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Called when exiting the context manager."""
