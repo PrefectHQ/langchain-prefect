@@ -4,7 +4,6 @@ from contextlib import ContextDecorator
 from functools import wraps
 from typing import Callable
 
-import pendulum
 from langchain.llms.base import BaseLLM
 from langchain.schema import LLMResult
 from prefect import Flow
