@@ -24,6 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Released on March 10th, 2023.
 
 ### Added
-
-- Utility functions for working with langchain tools and LLMs.
 - Wrapper for `BaseLLM` to record LLM calls as Prefect flows.
+- Examples of how to use `RecordLLMCalls` across many methods of invoking LLMs.
+- Utility functions for working with langchain tools and LLMs.

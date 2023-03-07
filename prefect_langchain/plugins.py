@@ -21,7 +21,7 @@ def record_llm_call(
     func: Callable[..., LLMResult],
     tags: set | None = None,
     flow_kwargs: dict | None = None,
-    max_prompt_tokens: int | None = int(1e3),
+    max_prompt_tokens: int | None = int(1e4),
 ) -> Callable[..., Flow]:
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
@@ -40,7 +40,8 @@ def record_llm_call(
         if max_prompt_tokens and ((N := num_tokens(prompts)) > max_prompt_tokens):
             raise ValueError(
                 f"Prompt is too long: it contains {N} tokens"
-                f" and {max_prompt_tokens=}. Did not call {llm_endpoint!r}."
+                f" and {max_prompt_tokens=}. Did not call {llm_endpoint!r}. "
+                "If desired, increase `max_prompt_tokens`."
             )
 
         llm_generate = flow_wrapped_fn(func, flow_kwargs, *args, **kwargs)
@@ -54,11 +55,15 @@ def record_llm_call(
 
 
 class RecordLLMCalls(ContextDecorator):
-    """Context manager for patching LLM calls with a prefect flow."""
+    """Context decorator for patching LLM calls with a prefect flow."""
 
     def __init__(self, **decorator_kwargs):
-        """Constructor for `RecordLLMCalls`.
-            Accepts `tags`, `flow_kwargs`, and `max_prompt_tokens`.
+        """Context decorator for patching LLM calls with a prefect flow.
+
+        Args:
+            tags: Tags to apply to flow runs created by this context manager.
+            flow_kwargs: Keyword arguments to pass to the flow decorator.
+            max_prompt_tokens: The maximum number of tokens allowed in a prompt.
 
         Example:
             Create a flow with `a_custom_tag` upon calling `OpenAI.generate`:
