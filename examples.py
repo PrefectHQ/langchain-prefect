@@ -109,5 +109,4 @@ if __name__ == "__main__":
     # record_call_using_qa_with_sources_chain_SOTU()
     # record_call_using_qa_with_sources_chain_prefect_docs()
     record_call_using_openai_chat()
-
     # record_call_using_huggingfacehub()
