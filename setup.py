@@ -18,7 +18,7 @@ setup(
     author="Prefect Technologies",
     author_email="nate@prefect.io",
     keywords="prefect",
-    url="https://github.com/zzstoatzz/prefect-langchain",
+    url="https://github.com/PrefectHQ/prefect-langchain",
     long_description=readme,
     long_description_content_type="text/markdown",
     version=versioneer.get_version(),

@@ -6,7 +6,7 @@
     "cookiecutter": {
       "full_name": "Prefect Technologies",
       "email": "nate@prefect.io",
-      "github_organization": "zzstoatzz",
+      "github_organization": "PrefectHQ",
       "collection_name": "prefect-langchain",
       "collection_slug": "prefect_langchain",
       "collection_short_description": "Orchestrate and observe tools built with langchain.",

@@ -19,10 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## 0.1.0
+## 0.0.1
 
-Released on ????? ?th, 20??.
+Released on March 10th, 2023.
 
 ### Added
 
-- `task_name` task - [#1](https://github.com/zzstoatzz/prefect-langchain/pull/1)
+- Utility functions for working with langchain tools and LLMs.
+- Wrapper for `BaseLLM` to record LLM calls as Prefect flows.
