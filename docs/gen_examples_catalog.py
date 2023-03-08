@@ -18,9 +18,9 @@ from griffe.docstrings.parsers import Parser, parse
 from prefect.logging.loggers import disable_logger
 from prefect.utilities.importtools import load_module, to_qualified_name
 
-import prefect_langchain
+import langchain_prefect
 
-COLLECTION_SLUG = "prefect_langchain"
+COLLECTION_SLUG = "langchain_prefect"
 
 
 def skip_parsing(name: str, obj: Union[ModuleType, Callable], module_nesting: str):
@@ -71,7 +71,7 @@ def get_code_examples(obj: Union[ModuleType, Callable]) -> Set[str]:
 
 
 code_examples_grouping = defaultdict(set)
-for _, module_name, ispkg in iter_modules(prefect_langchain.__path__):
+for _, module_name, ispkg in iter_modules(langchain_prefect.__path__):
     module_nesting = f"{COLLECTION_SLUG}.{module_name}"
     module_obj = load_module(module_nesting)
 
@@ -104,7 +104,7 @@ with mkdocs_gen_files.open(examples_catalog_path, "w") as generated_file:
             """
             # Examples Catalog
 
-            Below is a list of examples for `prefect-langchain`.
+            Below is a list of examples for `langchain-prefect`.
             """
         )
     )

@@ -2,7 +2,7 @@
 
 from langchain.llms import OpenAIChat
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 messages = [
     {"role": "system", "content": "You should speak like a pirate."},

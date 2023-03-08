@@ -6,7 +6,7 @@ global-exclude __pycache__/**
 
 # Top-level Config
 include versioneer.py
-include prefect_langchain/_version.py
+include langchain_prefect/_version.py
 include LICENSE
 include MANIFEST.in
 include setup.cfg

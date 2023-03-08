@@ -1,6 +1,6 @@
 from langchain.llms import OpenAI
 
-from prefect_langchain.utilities import NotAnArtifact, llm_invocation_summary
+from langchain_prefect.utilities import NotAnArtifact, llm_invocation_summary
 
 
 class TestParseInvocationSummary:

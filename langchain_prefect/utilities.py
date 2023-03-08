@@ -1,4 +1,4 @@
-"""Utilities for the prefect_langchain package."""
+"""Utilities for the langchain_prefect package."""
 
 from typing import Any, Callable, List
 

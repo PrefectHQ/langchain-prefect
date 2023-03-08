@@ -1,7 +1,7 @@
 import pytest
 from prefect import Flow
 
-from prefect_langchain.utilities import flow_wrapped_fn, num_tokens, truncate
+from langchain_prefect.utilities import flow_wrapped_fn, num_tokens, truncate
 
 
 @pytest.mark.parametrize(

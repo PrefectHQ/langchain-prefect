@@ -12,13 +12,13 @@ with open("README.md") as readme_file:
     readme = readme_file.read()
 
 setup(
-    name="prefect-langchain",
+    name="langchain-prefect",
     description="Orchestrate and observe tools built with langchain.",
     license="Apache License 2.0",
     author="Prefect Technologies",
     author_email="nate@prefect.io",
     keywords="prefect",
-    url="https://github.com/PrefectHQ/prefect-langchain",
+    url="https://github.com/PrefectHQ/langchain-prefect",
     long_description=readme,
     long_description_content_type="text/markdown",
     version=versioneer.get_version(),
@@ -29,7 +29,7 @@ setup(
     extras_require={"dev": dev_requires},
     entry_points={
         "prefect.collections": [
-            "prefect_langchain = prefect_langchain",
+            "langchain_prefect = langchain_prefect",
         ]
     },
     classifiers=[

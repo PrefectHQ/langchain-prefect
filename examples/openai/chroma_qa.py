@@ -6,7 +6,7 @@ from langchain.llms import OpenAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 documents = document_loaders.WebBaseLoader("https://docs.prefect.io/").load()

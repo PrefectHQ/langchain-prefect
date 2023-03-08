@@ -4,7 +4,7 @@ from langchain.agents import initialize_agent, load_tools
 from langchain.llms import OpenAI
 from prefect import flow
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 llm = OpenAI(temperature=0)
 tools = load_tools(["llm-math"])

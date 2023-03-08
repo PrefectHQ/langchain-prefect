@@ -1,6 +1,6 @@
-site_name: prefect-langchain
-site_url: https://PrefectHQ.github.io/prefect-langchain
-repo_url: https://github.com/PrefectHQ/prefect-langchain
+site_name: langchain-prefect
+site_url: https://PrefectHQ.github.io/langchain-prefect
+repo_url: https://github.com/PrefectHQ/langchain-prefect
 edit_uri: edit/main/docs/
 theme:
   name: material
@@ -68,7 +68,7 @@ plugins:
             show_signature: False
             heading_level: 1
 watch:
-    - prefect_langchain/
+    - langchain_prefect/
     - README.md
 
 nav:

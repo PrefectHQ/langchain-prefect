@@ -3,7 +3,7 @@ from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 conversation = ConversationChain(llm=OpenAI(), memory=ConversationBufferMemory())
 

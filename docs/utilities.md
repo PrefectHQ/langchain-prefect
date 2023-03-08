@@ -3,4 +3,4 @@ description:
 notes: This documentation page is generated from source file docstrings.
 ---
 
-::: prefect_langchain.utilities
+::: langchain_prefect.utilities

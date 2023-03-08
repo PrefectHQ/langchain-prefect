@@ -9,7 +9,7 @@ from langchain.schema import LLMResult
 from prefect import Flow
 from prefect import tags as prefect_tags
 
-from prefect_langchain.utilities import (
+from langchain_prefect.utilities import (
     flow_wrapped_fn,
     llm_invocation_summary,
     num_tokens,
