@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "prefect_langchain/**"
+      - "langchain_prefect/**"
       - "tests/**"
       - "setup.py"
       - "requirements*.txt"

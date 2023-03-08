@@ -1,16 +1,16 @@
-# prefect-langchain
+# langchain-prefect
 
 <p align="center">
     <!--- Insert a cover image here -->
     <!--- <br> -->
-    <a href="https://pypi.python.org/pypi/prefect-langchain/" alt="PyPI version">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-langchain?color=0052FF&labelColor=090422"></a>
-    <a href="https://github.com/PrefectHQ/prefect-langchain/" alt="Stars">
-        <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-langchain?color=0052FF&labelColor=090422" /></a>
-    <a href="https://pypistats.org/packages/prefect-langchain/" alt="Downloads">
-        <img src="https://img.shields.io/pypi/dm/prefect-langchain?color=0052FF&labelColor=090422" /></a>
-    <a href="https://github.com/PrefectHQ/prefect-langchain/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-langchain?color=0052FF&labelColor=090422" /></a>
+    <a href="https://pypi.python.org/pypi/langchain-prefect/" alt="PyPI version">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/langchain-prefect?color=0052FF&labelColor=090422"></a>
+    <a href="https://github.com/PrefectHQ/langchain-prefect/" alt="Stars">
+        <img src="https://img.shields.io/github/stars/PrefectHQ/langchain-prefect?color=0052FF&labelColor=090422" /></a>
+    <a href="https://pypistats.org/packages/langchain-prefect/" alt="Downloads">
+        <img src="https://img.shields.io/pypi/dm/langchain-prefect?color=0052FF&labelColor=090422" /></a>
+    <a href="https://github.com/PrefectHQ/langchain-prefect/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/langchain-prefect?color=0052FF&labelColor=090422" /></a>
     <br>
     <a href="https://prefect-community.slack.com" alt="Slack">
         <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
@@ -27,7 +27,7 @@ Orchestrate and observe tools built with langchain using Prefect.
 ### Call an LLM and track the invocation with Prefect:
 ```python
 from langchain.llms import OpenAI
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 with RecordLLMCalls():
     llm = OpenAI(temperature=0.9)
@@ -69,20 +69,20 @@ Find more examples [here](examples/).
 ### Installation
 
 ```bash
-pip install prefect-langchain
+pip install langchain-prefect
 ```
 
 Requires an installation of Python 3.10+.
 
 ### Feedback
 
-If you encounter any bugs while using `prefect-langchain`, feel free to open an issue in the [prefect-langchain](https://github.com/PrefectHQ/prefect-langchain) repository.
+If you encounter any bugs while using `langchain-prefect`, feel free to open an issue in the [langchain-prefect](https://github.com/PrefectHQ/langchain-prefect) repository.
 
-Feel free to star or watch [`prefect-langchain`](https://github.com/PrefectHQ/prefect-langchain) for updates too!
+Feel free to star or watch [`langchain-prefect`](https://github.com/PrefectHQ/langchain-prefect) for updates too!
 
 ### Contributing
 
-If you'd like to help contribute to fix an issue or add a feature to `prefect-langchain`, please [propose changes through a pull request from a fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+If you'd like to help contribute to fix an issue or add a feature to `langchain-prefect`, please [propose changes through a pull request from a fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
 
 Here are the steps:
 
@@ -94,7 +94,7 @@ pip install -e ".[dev]"
 ```
 4. Make desired changes
 5. Add tests
-6. Insert an entry to [CHANGELOG.md](https://github.com/PrefectHQ/prefect-langchain/blob/main/CHANGELOG.md)
+6. Insert an entry to [CHANGELOG.md](https://github.com/PrefectHQ/langchain-prefect/blob/main/CHANGELOG.md)
 7. Install `pre-commit` to perform quality checks prior to commit:
 ```
 pre-commit install

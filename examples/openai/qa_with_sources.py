@@ -2,7 +2,7 @@
 from langchain import document_loaders
 from langchain.indexes import VectorstoreIndexCreator
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 loader = document_loaders.TextLoader("context/state_of_the_union.txt")
 index = VectorstoreIndexCreator().from_loaders([loader])

@@ -3,7 +3,7 @@ import asyncio
 
 from langchain.llms import OpenAI
 
-from prefect_langchain.plugins import RecordLLMCalls
+from langchain_prefect.plugins import RecordLLMCalls
 
 llm = OpenAI(temperature=0.9)
 
