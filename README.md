@@ -4,7 +4,6 @@
     <!--- Insert a cover image here -->
     <!--- <br> -->
     <img src="https://user-images.githubusercontent.com/31014960/224118318-02e49d8e-72e0-4850-93f7-d850c0f06ca1.png">
-
     <a href="https://pypi.python.org/pypi/langchain-prefect/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/langchain-prefect?color=0052FF&labelColor=090422"></a>
     <a href="https://github.com/PrefectHQ/langchain-prefect/" alt="Stars">
