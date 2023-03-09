@@ -7,18 +7,19 @@ from prefect import flow
 from langchain_prefect.plugins import RecordLLMCalls
 
 llm = OpenAI(temperature=0)
-tools = load_tools(["llm-math"])
+tools = load_tools(["llm-math"], llm=llm)
 agent = initialize_agent(tools, llm)
 
 
 @flow
 def my_flow():
     """Flow wrapping any LLM calls made by the agent."""
-    agent.run(
+    return agent.run(
         "How old is the current Dalai Lama? "
         "What is his age divided by 2 (rounded to the nearest integer)?"
     )
 
 
 with RecordLLMCalls(tags={"agent"}):
-    my_flow()
+    result = my_flow()
+    print(result)

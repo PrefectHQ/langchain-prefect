@@ -3,6 +3,8 @@
 <p align="center">
     <!--- Insert a cover image here -->
     <!--- <br> -->
+    <img src="https://user-images.githubusercontent.com/31014960/224118318-02e49d8e-72e0-4850-93f7-d850c0f06ca1.png">
+
     <a href="https://pypi.python.org/pypi/langchain-prefect/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/langchain-prefect?color=0052FF&labelColor=090422"></a>
     <a href="https://github.com/PrefectHQ/langchain-prefect/" alt="Stars">
@@ -18,9 +20,11 @@
         <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
 </p>
 
-Orchestrate and observe tools built with langchain using Prefect.
+## Orchestrate and observe langchain using Prefect
 
+Large Language Models (LLMs) are interesting and useful  -  building apps that use them responsibly feels like a no-brainer. Tools like [Langchain](https://github.com/hwchase17/langchain) make it easier to build apps using LLMs. We need to know details about how our apps work, even when we want to use tools with convenient abstractions that may obfuscate those details.
 
+Prefect is built to help data people build, run, and observe event-driven workflows wherever they want. It provides a framework for creating deployments on a whole slew of runtime environments (from Lambda to Kubernetes), and is cloud agnostic (best supports AWS, GCP, Azure). For this reason, it could be a great fit for observing apps that use LLMs.
 
 ## Example Usage
 
@@ -38,7 +42,9 @@ with RecordLLMCalls():
 ```
 and a flow run will be created to track the invocation of the LLM:
 
-![](docs/img/LLMinvokeUI.png)
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/31014960/224114166-f2c7d5ed-49b6-406e-a384-bd327d4e1fe4.png" alt="LLM invocation UI">
+</p>
 
 ### Run several LLM calls via langchain agent as Prefect subflows:
 ```python
@@ -52,7 +58,7 @@ tools = load_tools(["llm-math"], llm=llm)
 agent = initialize_agent(tools, llm)
 
 @flow
-def my_flow():  # noqa: D103
+def my_flow():
     agent.run(
         "How old is the current Dalai Lama? "
         "What is his age divided by 2 (rounded to the nearest integer)?"
@@ -61,9 +67,18 @@ def my_flow():  # noqa: D103
 with RecordLLMCalls(tags={"agent"}):
     my_flow()
 ```
-![](docs/img/LLMagentUI.png)
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/31014960/224113843-b91f204b-8085-4739-b483-a45c4f339210.png" alt="LLM agent UI">
+</p>
 
 Find more examples [here](examples/).
+
+## How do I get a Prefect UI?
+- The easiest way is to use the [Prefect Cloud](https://www.prefect.io/cloud/) UI. You can find details on getting setup [here](https://docs.prefect.io/ui/cloud-quickstart/).
+
+- If you don't want to sign up for cloud, you can use the dashboard locally by running `prefect server start` in your terminal - more details [here](https://docs.prefect.io/ui/overview/#using-the-prefect-ui).
+
 
 ## Resources
 ### Installation

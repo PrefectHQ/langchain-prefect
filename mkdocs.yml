@@ -55,8 +55,6 @@ plugins:
   - gen-files:
       scripts:
         - docs/gen_home_page.py
-        - docs/gen_examples_catalog.py
-        - docs/gen_blocks_catalog.py
   - mkdocstrings:
       handlers:
         python:
@@ -73,11 +71,9 @@ watch:
 
 nav:
     - Home: index.md
-    - Blocks Catalog: blocks_catalog.md
-    - Examples Catalog: examples_catalog.md
     - API Reference:
-        - Tasks: tasks.md
-        - Flows: flows.md
+        - Plugins: plugins.md
+        - Utilities: utilities.md
 
 
 extra:
