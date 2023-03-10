@@ -11,10 +11,8 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
           - "3.10"
+          - "3.11"
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
@@ -34,5 +32,6 @@ jobs:
       - name: Run tests
         env:
           PREFECT_API_DATABASE_CONNECTION_URL: "sqlite+aiosqlite:///./collection-tests.db"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           pytest tests -vv
