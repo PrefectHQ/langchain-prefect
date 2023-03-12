@@ -10,14 +10,14 @@ from prefect.utilities.collections import listrepr
 from pydantic import BaseModel
 
 
-def get_prompt_content(prompts: List[BaseMessage]) -> List[str]:
+def get_prompt_content(prompts: Any) -> List[str]:
     """Return the content of the prompts."""
     if isinstance(prompts[0], str):
         return prompts
     elif isinstance(prompts[0], BaseMessage):
         return [p.content for p in prompts]
     else:
-        return [p.content for l in prompts for p in l]
+        return [p.content for msg_list in prompts for p in msg_list]
 
 
 def num_tokens(text: str | List[str]) -> int:
