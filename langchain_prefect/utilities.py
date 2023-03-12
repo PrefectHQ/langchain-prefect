@@ -3,11 +3,21 @@
 from typing import Any, Callable, List
 
 import tiktoken
-from langchain.schema import LLMResult
+from langchain.schema import BaseMessage, LLMResult
 from prefect import Flow, flow
 from prefect.utilities.asyncutils import is_async_fn
 from prefect.utilities.collections import listrepr
 from pydantic import BaseModel
+
+
+def get_prompt_content(prompts: List[BaseMessage]) -> List[str]:
+    """Return the content of the prompts."""
+    if isinstance(prompts[0], str):
+        return prompts
+    elif isinstance(prompts[0], BaseMessage):
+        return [p.content for p in prompts]
+    else:
+        return [p.content for l in prompts for p in l]
 
 
 def num_tokens(text: str | List[str]) -> int:
@@ -18,7 +28,7 @@ def num_tokens(text: str | List[str]) -> int:
     return len(tiktoken.encoding_for_model("text-davinci-003").encode(text))
 
 
-def truncate(text, max_length: int = 300) -> str:
+def truncate(text: str, max_length: int = 300) -> str:
     """Truncate text to max_length."""
     if len(text) > 3 and len(text) >= max_length:
         i = (max_length - 3) // 2
@@ -43,8 +53,10 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
 
     llm_endpoint = subcls.__module__
 
+    prompt_content = get_prompt_content(prompts)
+
     summary = (
-        f"Sending {listrepr([truncate(p) for p in prompts])} "
+        f"Sending {listrepr([truncate(p) for p in prompt_content])} "
         f"to {llm_endpoint} via {invocation_fn!r}"
     )
 
