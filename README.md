@@ -74,7 +74,7 @@ with RecordLLMCalls(tags={"agent"}):
 Find more examples [here](examples/).
 
 ## How do I get a Prefect UI?
-- The easiest way is to use the [Prefect Cloud](https://www.prefect.io/cloud/) UI. You can find details on getting setup [here](https://docs.prefect.io/ui/cloud-quickstart/).
+- The easiest way is to use the [Prefect Cloud](https://www.prefect.io/cloud/) UI for free. You can find details on getting setup [here](https://docs.prefect.io/ui/cloud-quickstart/).
 
 - If you don't want to sign up for cloud, you can use the dashboard locally by running `prefect server start` in your terminal - more details [here](https://docs.prefect.io/ui/overview/#using-the-prefect-ui).
 
