@@ -18,20 +18,23 @@ text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 documents = text_splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
-vectorstore = Chroma.from_documents(documents, embeddings)
 
 system_template = """Use the following pieces of context to answer the users question. 
 If you don't know the answer, just say that you don't know, don't make up an answer.
 ----------------
 {context}"""
-messages = [
-    SystemMessagePromptTemplate.from_template(system_template),
-    HumanMessagePromptTemplate.from_template("{question}"),
-]
-prompt = ChatPromptTemplate.from_messages(messages)
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        SystemMessagePromptTemplate.from_template(system_template),
+        HumanMessagePromptTemplate.from_template("{question}"),
+    ]
+)
 
 qa = ChatVectorDBChain.from_llm(
-    ChatOpenAI(temperature=0), vectorstore, qa_prompt=prompt
+    llm=ChatOpenAI(temperature=0),
+    vectorstore=Chroma.from_documents(documents, embeddings),
+    qa_prompt=prompt,
 )
 
 with RecordLLMCalls(
