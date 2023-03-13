@@ -4,13 +4,13 @@ from contextlib import ContextDecorator
 from functools import wraps
 from typing import Callable
 
-from langchain.llms.base import BaseLLM
-from langchain.schema import LLMResult
+from langchain.schema import BaseLanguageModel, LLMResult
 from prefect import Flow
 from prefect import tags as prefect_tags
 
 from langchain_prefect.utilities import (
     flow_wrapped_fn,
+    get_prompt_content,
     llm_invocation_summary,
     num_tokens,
 )
@@ -36,7 +36,9 @@ def record_llm_call(
         llm_endpoint = invocation_artifact.content["llm_endpoint"]
         prompts = invocation_artifact.content["prompts"]
 
-        if max_prompt_tokens and ((N := num_tokens(prompts)) > max_prompt_tokens):
+        if max_prompt_tokens and (
+            (N := num_tokens(get_prompt_content(prompts))) > max_prompt_tokens
+        ):
             raise ValueError(
                 f"Prompt is too long: it contains {N} tokens"
                 f" and {max_prompt_tokens=}. Did not call {llm_endpoint!r}. "
@@ -119,10 +121,15 @@ class RecordLLMCalls(ContextDecorator):
         LLM api calls in a different place.
         """
         self.patched_methods = []
+        for subcls in BaseLanguageModel.__subclasses__():
+            if subcls.__name__ == "BaseChatModel":
+                for subsubcls in subcls.__subclasses__():
+                    # patch `BaseChatModel` generate methods when used as callable
+                    self._patch_method(subsubcls, "_generate", record_llm_call)
+                    self._patch_method(subsubcls, "_agenerate", record_llm_call)
 
-        for subcls in BaseLLM.__subclasses__():
-            self._patch_method(subcls, "agenerate", record_llm_call)
             self._patch_method(subcls, "generate", record_llm_call)
+            self._patch_method(subcls, "agenerate", record_llm_call)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Called when exiting the context manager."""

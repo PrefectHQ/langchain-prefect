@@ -1,15 +1,17 @@
 """Example observing LLM calls made by `OpenAIChat` LLM."""
 
-from langchain.llms import OpenAIChat
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import HumanMessage, SystemMessage
 
 from langchain_prefect.plugins import RecordLLMCalls
 
 messages = [
-    {"role": "system", "content": "You should speak like a pirate."},
-    {"role": "user", "content": "I don't care about frogs."},
+    SystemMessage(content="You should speak like a pirate."),
+    HumanMessage(content="I don't care about frogs."),
+    HumanMessage(content="What did I just say?"),
 ]
 
-chatbot = OpenAIChat(prefix_messages=messages, temperature=0.9)
+chatbot = ChatOpenAI()
 
 with RecordLLMCalls():
-    chatbot("what did I just say?")  # langchain assumes this is a user message
+    print(chatbot(messages))
