@@ -49,7 +49,7 @@ def llm_invocation_summary(*args, **kwargs) -> NotAnArtifact:
 
     subcls, prompts, *rest = args
 
-    invocation_fn = kwargs.pop("invocation_fn")
+    invocation_fn = kwargs["invocation_fn"]
 
     llm_endpoint = subcls.__module__
 

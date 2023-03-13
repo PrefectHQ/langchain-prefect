@@ -19,8 +19,8 @@ from langchain_prefect.utilities import (
 def record_llm_call(
     func: Callable[..., LLMResult],
     tags: set | None = None,
-    flow_kwargs: dict | None = None,
     max_prompt_tokens: int | None = int(1e4),
+    flow_kwargs: dict | None = None,
 ) -> Callable[..., Flow]:
     """Decorator for wrapping a Langchain LLM call with a prefect flow."""
 
@@ -132,7 +132,7 @@ class RecordLLMCalls(ContextDecorator):
             self._patch_method(subcls, "agenerate", record_llm_call)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Called when exiting the context manager."""
+        """Reset methods when exiting the context manager."""
         for cls, method_name, original_method in self.patched_methods:
             setattr(cls, method_name, original_method)
 

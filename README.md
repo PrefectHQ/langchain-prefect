@@ -25,7 +25,8 @@ Large Language Models (LLMs) are interesting and useful  -  building apps th
 
 Prefect is built to help data people build, run, and observe event-driven workflows wherever they want. It provides a framework for creating deployments on a whole slew of runtime environments (from Lambda to Kubernetes), and is cloud agnostic (best supports AWS, GCP, Azure). For this reason, it could be a great fit for observing apps that use LLMs.
 
-## Example Usage
+## Features
+- `RecordLLMCalls` is a `ContextDecorator` that can be used to track LLM calls made by Langchain LLMs as Prefect flows.
 
 ### Call an LLM and track the invocation with Prefect:
 ```python
