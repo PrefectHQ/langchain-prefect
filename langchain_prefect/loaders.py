@@ -80,8 +80,6 @@ class GithubIssueLoader(BaseLoader):
                     "include": "comments",
                 },
             )
-            print(response.url)
-            exit()
             response.raise_for_status()
             if not (new_issues := response.json()):
                 break
