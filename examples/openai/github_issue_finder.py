@@ -30,6 +30,7 @@ index = Chroma.from_documents(
 
 
 def answer(question: str, k: int = 5):
+    """Answer a question using the index."""
     return chain(
         {
             "input_documents": index.similarity_search(question, k=k),
