@@ -14,8 +14,8 @@ from langchain_prefect import utilities as utils
         ("", 0),
         (" ", 1),
         ("Hello, world!", 4),
-        ("Foo bar baz", 5),
-        ("Foo bar baz".split(), 5),
+        ("Foo bar baz", 3),
+        ("Foo bar baz".split(), 3),
     ],
 )
 def test_num_tokens(text, expected_num_tokens):

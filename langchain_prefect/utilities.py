@@ -20,12 +20,14 @@ def get_prompt_content(prompts: Any) -> List[str]:
         return [p.content for msg_list in prompts for p in msg_list]
 
 
-def num_tokens(text: str | List[str]) -> int:
-    """Return the number of tokens in the text."""
+def num_tokens(text: str | List[str], encoding_name: str = "cl100k_base") -> int:
+    """Returns the number of tokens in a text string."""
     if isinstance(text, list):
         text = "".join(text)
 
-    return len(tiktoken.encoding_for_model("text-davinci-003").encode(text))
+    encoding = tiktoken.get_encoding(encoding_name)
+    num_tokens = len(encoding.encode(text))
+    return num_tokens
 
 
 def truncate(text: str, max_length: int = 300) -> str:

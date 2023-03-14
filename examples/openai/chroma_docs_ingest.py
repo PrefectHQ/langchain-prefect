@@ -1,3 +1,6 @@
+"""This example shows how to use the ChatGPT API
+with LangChain to answer questions about Prefect."""
+
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import CharacterTextSplitter
@@ -9,10 +12,10 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 
-from langchain_prefect.loaders import GitHubLoader
+from langchain_prefect.loaders import GitHubRepoLoader
 from langchain_prefect.plugins import RecordLLMCalls
 
-documents = GitHubLoader("PrefectHQ/prefect", glob="**/*.md").load()
+documents = GitHubRepoLoader("PrefectHQ/prefect", glob="**/*.md").load()
 
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 documents = text_splitter.split_documents(documents)
