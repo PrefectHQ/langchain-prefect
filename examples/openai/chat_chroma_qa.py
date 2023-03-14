@@ -1,4 +1,5 @@
-"""This example shows how to use the ChatGPT API with LangChain to answer questions about Prefect."""
+"""This example shows how to use the ChatGPT API
+with LangChain to answer questions about Prefect."""
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
