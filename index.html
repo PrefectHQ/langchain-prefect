@@ -309,11 +309,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
-    Example Usage
+  <a href="#features" class="md-nav__link">
+    Features
   </a>
   
-    <nav class="md-nav" aria-label="Example Usage">
+    <nav class="md-nav" aria-label="Features">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -481,11 +481,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
-    Example Usage
+  <a href="#features" class="md-nav__link">
+    Features
   </a>
   
-    <nav class="md-nav" aria-label="Example Usage">
+    <nav class="md-nav" aria-label="Features">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -589,7 +589,10 @@
 <h2 id="orchestrate-and-observe-langchain-using-prefect">Orchestrate and observe langchain using Prefect</h2>
 <p>Large Language Models (LLMs) are interesting and useful  -  building apps that use them responsibly feels like a no-brainer. Tools like <a href="https://github.com/hwchase17/langchain">Langchain</a> make it easier to build apps using LLMs. We need to know details about how our apps work, even when we want to use tools with convenient abstractions that may obfuscate those details.</p>
 <p>Prefect is built to help data people build, run, and observe event-driven workflows wherever they want. It provides a framework for creating deployments on a whole slew of runtime environments (from Lambda to Kubernetes), and is cloud agnostic (best supports AWS, GCP, Azure). For this reason, it could be a great fit for observing apps that use LLMs.</p>
-<h2 id="example-usage">Example Usage</h2>
+<h2 id="features">Features</h2>
+<ul>
+<li><code>RecordLLMCalls</code> is a <code>ContextDecorator</code> that can be used to track LLM calls made by Langchain LLMs as Prefect flows.</li>
+</ul>
 <h3 id="call-an-llm-and-track-the-invocation-with-prefect">Call an LLM and track the invocation with Prefect:</h3>
 <p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">langchain.llms</span> <span class="kn">import</span> <span class="n">OpenAI</span>
 <span class="kn">from</span> <span class="nn">langchain_prefect.plugins</span> <span class="kn">import</span> <span class="n">RecordLLMCalls</span>
@@ -634,7 +637,7 @@ and a flow run will be created to track the invocation of the LLM:</p>
 <h2 id="how-do-i-get-a-prefect-ui">How do I get a Prefect UI?</h2>
 <ul>
 <li>
-<p>The easiest way is to use the <a href="https://www.prefect.io/cloud/">Prefect Cloud</a> UI. You can find details on getting setup <a href="https://docs.prefect.io/ui/cloud-quickstart/">here</a>.</p>
+<p>The easiest way is to use the <a href="https://www.prefect.io/cloud/">Prefect Cloud</a> UI for free. You can find details on getting setup <a href="https://docs.prefect.io/ui/cloud-quickstart/">here</a>.</p>
 </li>
 <li>
 <p>If you don't want to sign up for cloud, you can use the dashboard locally by running <code>prefect server start</code> in your terminal - more details <a href="https://docs.prefect.io/ui/overview/#using-the-prefect-ui">here</a>.</p>

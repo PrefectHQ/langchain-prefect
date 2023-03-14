@@ -626,9 +626,7 @@
 
         <details class="quote">
           <summary>Source code in <code>langchain_prefect/plugins.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 58</span>
 <span class="normal"> 59</span>
 <span class="normal"> 60</span>
 <span class="normal"> 61</span>
@@ -707,7 +705,14 @@
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RecordLLMCalls</span><span class="p">(</span><span class="n">ContextDecorator</span><span class="p">):</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RecordLLMCalls</span><span class="p">(</span><span class="n">ContextDecorator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Context decorator for patching LLM calls with a prefect flow.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">decorator_kwargs</span><span class="p">):</span>
@@ -773,13 +778,18 @@
 <span class="sd">        LLM api calls in a different place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">patched_methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subcls</span> <span class="ow">in</span> <span class="n">BaseLanguageModel</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">subcls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseChatModel&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">subsubcls</span> <span class="ow">in</span> <span class="n">subcls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+                    <span class="c1"># patch `BaseChatModel` generate methods when used as callable</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subsubcls</span><span class="p">,</span> <span class="s2">&quot;_generate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subsubcls</span><span class="p">,</span> <span class="s2">&quot;_agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">subcls</span> <span class="ow">in</span> <span class="n">BaseLLM</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;generate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when exiting the context manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset methods when exiting the context manager.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">original_method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patched_methods</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">original_method</span><span class="p">)</span>
 
@@ -822,9 +832,7 @@ LLM api calls in a different place.</p>
 
       <details class="quote">
         <summary>Source code in <code>langchain_prefect/plugins.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
@@ -832,17 +840,29 @@ LLM api calls in a different place.</p>
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Called when entering the context manager.</span>
 
 <span class="sd">    This is what would need to be changed if Langchain started making</span>
 <span class="sd">    LLM api calls in a different place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">patched_methods</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">subcls</span> <span class="ow">in</span> <span class="n">BaseLanguageModel</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">subcls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseChatModel&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">subsubcls</span> <span class="ow">in</span> <span class="n">subcls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+                <span class="c1"># patch `BaseChatModel` generate methods when used as callable</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subsubcls</span><span class="p">,</span> <span class="s2">&quot;_generate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subsubcls</span><span class="p">,</span> <span class="s2">&quot;_agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">subcls</span> <span class="ow">in</span> <span class="n">BaseLLM</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;generate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_patch_method</span><span class="p">(</span><span class="n">subcls</span><span class="p">,</span> <span class="s2">&quot;agenerate&quot;</span><span class="p">,</span> <span class="n">record_llm_call</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -861,15 +881,15 @@ LLM api calls in a different place.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Called when exiting the context manager.</p>
+      <p>Reset methods when exiting the context manager.</p>
 
       <details class="quote">
         <summary>Source code in <code>langchain_prefect/plugins.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called when exiting the context manager.&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset methods when exiting the context manager.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">original_method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patched_methods</span><span class="p">:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">original_method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -997,9 +1017,7 @@ def my_flow():  # noqa: D103
 </details>
       <details class="quote">
         <summary>Source code in <code>langchain_prefect/plugins.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 61</span>
 <span class="normal"> 62</span>
 <span class="normal"> 63</span>
 <span class="normal"> 64</span>
@@ -1051,7 +1069,9 @@ def my_flow():  # noqa: D103
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">decorator_kwargs</span><span class="p">):</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">decorator_kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Context decorator for patching LLM calls with a prefect flow.</span>
 
 <span class="sd">    Args:</span>
@@ -1171,11 +1191,13 @@ def my_flow():  # noqa: D103
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">record_llm_call</span><span class="p">(</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">record_llm_call</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">LLMResult</span><span class="p">],</span>
     <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">flow_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_prompt_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">),</span>
+    <span class="n">flow_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Flow</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator for wrapping a Langchain LLM call with a prefect flow.&quot;&quot;&quot;</span>
 
@@ -1191,7 +1213,9 @@ def my_flow():  # noqa: D103
         <span class="n">llm_endpoint</span> <span class="o">=</span> <span class="n">invocation_artifact</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;llm_endpoint&quot;</span><span class="p">]</span>
         <span class="n">prompts</span> <span class="o">=</span> <span class="n">invocation_artifact</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;prompts&quot;</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">max_prompt_tokens</span> <span class="ow">and</span> <span class="p">((</span><span class="n">N</span> <span class="o">:=</span> <span class="n">num_tokens</span><span class="p">(</span><span class="n">prompts</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">max_prompt_tokens</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">max_prompt_tokens</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">N</span> <span class="o">:=</span> <span class="n">num_tokens</span><span class="p">(</span><span class="n">get_prompt_content</span><span class="p">(</span><span class="n">prompts</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="n">max_prompt_tokens</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Prompt is too long: it contains </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> tokens&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot; and </span><span class="si">{</span><span class="n">max_prompt_tokens</span><span class="si">=}</span><span class="s2">. Did not call </span><span class="si">{</span><span class="n">llm_endpoint</span><span class="si">!r}</span><span class="s2">. &quot;</span>
