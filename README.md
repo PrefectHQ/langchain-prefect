@@ -19,6 +19,8 @@
         <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
 </p>
 
+Read the [accompanying article](https://medium.com/the-prefect-blog/keeping-your-eyes-on-your-ai-tools-6428664537da) for background
+
 ## Orchestrate and observe langchain using Prefect
 
 Large Language Models (LLMs) are interesting and useful  -  building apps that use them responsibly feels like a no-brainer. Tools like [Langchain](https://github.com/hwchase17/langchain) make it easier to build apps using LLMs. We need to know details about how our apps work, even when we want to use tools with convenient abstractions that may obfuscate those details.
