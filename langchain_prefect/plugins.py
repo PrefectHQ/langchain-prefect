@@ -4,7 +4,8 @@ from contextlib import ContextDecorator
 from functools import wraps
 from typing import Callable
 
-from langchain.schema import BaseLanguageModel, LLMResult
+from langchain.schema import LLMResult
+from langchain.base_language import BaseLanguageModel
 from prefect import Flow
 from prefect import tags as prefect_tags
 
